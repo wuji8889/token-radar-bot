@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar: pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <p class="kicker">Token launch radar &middot; snapshot <span id="as-of">—</span></p>
+    <h1>Which protocol launches next — and what would its token be worth?</h1>
+    <p class="lede">Every protocol below records no token yet. Each one is ranked by an implied value
+      built from the snapshot's own figures: its TVL, the market's own multiple for its category,
+      its seven-day growth, and how long it has run with no token. Click a row for its detail and
+      its farm plan.</p>
+    <p class="stats" id="stats">Loading the board…</p>
+  </div>
+</header>
+<main class="wrap">
+  <section class="controls" aria-label="Filter the board">
+    <input id="q" type="search" placeholder="Search name or slug…" aria-label="Search name or slug">
+    <select id="cat" aria-label="Category"><option value="">All categories</option></select>
+    <select id="chain" aria-label="Chain"><option value="">All chains</option></select>
+    <label class="check"><input id="wl" type="checkbox"> Watchlist only</label>
+    <span class="count" id="count"></span>
+  </section>
+  <section aria-label="The board">
+    <table id="board">
+      <thead><tr>
+        <th data-sort="rank" class="num">#</th>
+        <th data-sort="name">Protocol</th>
+        <th data-sort="category">Category</th>
+        <th data-sort="chains">Chains</th>
+        <th data-sort="tvl_usd" class="num">TVL</th>
+        <th data-sort="change_7d" class="num">7d</th>
+        <th data-sort="age_days" class="num">Age</th>
+        <th data-sort="implied_value_usd" class="num">Implied value</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="hint">Click a column to sort. Click a row for its detail view and farm plan.</p>
+  </section>
+  <section id="detail" class="detail" hidden aria-label="Protocol detail"></section>
+  <section aria-label="Already trading">
+    <h2>Already trading — the market's own values</h2>
+    <p class="lede">These protocols already have a token, so the board never ranks them by a model's
+      value. They are the comparables the multiples come from: the market's own price for each
+      category's TVL.</p>
+    <table id="live">
+      <thead><tr>
+        <th>Protocol</th><th>Category</th><th class="num">TVL</th>
+        <th class="num">Market cap</th><th class="num">mcap / TVL</th><th class="num">7d</th>
+      </tr></thead>
+      <tbody id="live-rows"></tbody>
+    </table>
+  </section>
+  <section aria-label="How the value is built">
+    <h2>How the implied value is built</h2>
+    <p class="lede">No name is ever special-cased. One function scores every row:</p>
+    <p class="formula">implied = TVL &times; category multiple &times; growth &times; maturity &times; breadth</p>
+    <ul class="method">
+      <li><strong>Category multiple.</strong> The median market-cap-to-TVL ratio of the live protocols
+        in the same category that already trade, when at least 3 of them carry both figures; otherwise
+        the whole market's median. Clamped to 0.05–1.50. The table below lists every multiple the board
+        used.</li>
+      <li><strong>Growth.</strong> The protocol's seven-day TVL change, clamped to −60%…+120%, times 0.6:
+        1 + growth &times; 0.6. Missing growth counts as 0%.</li>
+      <li><strong>Maturity.</strong> 0.6 + min(age, 1095 days) / 1095 &times; 0.4. A protocol that has run
+        longer with no token scores higher; unknown age counts as 365 days.</li>
+      <li><strong>Breadth.</strong> 1 + 0.02 per extra chain, up to 5 extra chains.</li>
+      <li><strong>The board.</strong> All 40 watchlist protocols, plus the pre-token protocols below the
+        $50M floor that pass the same visible filters (no wrapped, staked or bridged product, no
+        versioned name, no exchange product), best implied value first.</li>
+      <li><strong>A limit the snapshot sets.</strong> It carries no parent-protocol field, so a child
+        product below the floor can slip past the visible filters. “Records no token” means the
+        record carries none — never that the protocol has none.</li>
+    </ul>
+    <table id="multiples">
+      <thead><tr><th>Category</th><th class="num">Comparables</th><th class="num">Multiple</th><th>Source</th></tr></thead>
+      <tbody id="mult-rows"></tbody>
+    </table>
+  </section>
+</main>
+<footer class="wrap">
+  <p>Token Radar &middot; model <span id="model-ver">—</span> &middot; data: the sealed snapshot,
+    DefiLlama's public API as of <span id="as-of-2">—</span> &middot; an implied value is this
+    entry's own claim, never a prediction that a token is issued or what it will trade at.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
